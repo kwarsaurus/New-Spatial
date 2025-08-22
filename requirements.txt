@@ -1,0 +1,25 @@
+# Core ML and Data Science
+pandas==2.1.4
+numpy==1.24.3
+scikit-learn==1.3.2
+joblib==1.3.2
+
+# Streamlit and Web Components
+streamlit==1.29.0
+streamlit-folium==0.15.1
+
+# Visualization
+plotly==5.17.0
+folium==0.15.1
+
+# Geospatial and Distance Calculations
+geopy==2.4.1
+
+# System and Memory Monitoring
+psutil==5.9.6
+
+# Progress Bars (for training script)
+tqdm==4.66.1
+
+# Additional utilities
+warnings
