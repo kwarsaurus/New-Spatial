@@ -522,8 +522,8 @@ def main():
             st.markdown(f'<div class="metric-card"><h3>{best_score:.1f}/100</h3><p>Best Score</p></div>', unsafe_allow_html=True)
         
         with col4:
-            est_monthly_revenue = recommendations['predicted_revenue'].mean()
-            st.markdown(f'<div class="metric-card"><h3>Rp {est_monthly_revenue:,.0f}</h3><p>Est. Monthly Revenue</p></div>', unsafe_allow_html=True)
+            avg_distance = recommendations['distance_to_center'].mean()
+            st.markdown(f'<div class="metric-card"><h3>{avg_distance:.1f} km</h3><p>Avg Distance</p></div>', unsafe_allow_html=True)
         
         # Create two columns for map and recommendations
         col1, col2 = st.columns([2, 1])
@@ -559,21 +559,6 @@ def main():
             labels={'predicted_revenue': 'Predicted Revenue (IDR)', 'count': 'Frequency'}
         )
         st.plotly_chart(fig_revenue, use_container_width=True)
-        
-        # Daily revenue estimation chart
-        recommendations['estimated_daily_revenue'] = recommendations['predicted_revenue'] / 30
-        fig_daily = px.bar(
-            recommendations.head(10),
-            x=range(1, len(recommendations.head(10))+1),
-            y='estimated_daily_revenue',
-            title="Top 10 Locations - Estimated Daily Revenue",
-            labels={
-                'x': 'Location Rank',
-                'estimated_daily_revenue': 'Est. Daily Revenue (IDR)'
-            }
-        )
-        fig_daily.update_xaxis(title="Location Rank (#1 = Best)")
-        st.plotly_chart(fig_daily, use_container_width=True)
         
         # Data table
         st.subheader("📋 Complete Results")
