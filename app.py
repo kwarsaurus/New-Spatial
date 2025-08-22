@@ -178,8 +178,10 @@ class RestaurantLocationPredictor:
         }
     
     def get_available_categories(self):
-        """Get list of available categories"""
-        return list(self.models.keys())
+        """Get list of available categories (excluding 'Others')"""
+        categories = list(self.models.keys())
+        # Remove 'Others' category if it exists
+        return [cat for cat in categories if cat.lower() != 'others']
     
     def get_available_districts(self):
         """Get list of available districts"""
@@ -520,8 +522,8 @@ def main():
             st.markdown(f'<div class="metric-card"><h3>{best_score:.1f}/100</h3><p>Best Score</p></div>', unsafe_allow_html=True)
         
         with col4:
-            avg_distance = recommendations['distance_to_center'].mean()
-            st.markdown(f'<div class="metric-card"><h3>{avg_distance:.1f} km</h3><p>Avg Distance</p></div>', unsafe_allow_html=True)
+            est_monthly_revenue = recommendations['predicted_revenue'].mean()
+            st.markdown(f'<div class="metric-card"><h3>Rp {est_monthly_revenue:,.0f}</h3><p>Est. Monthly Revenue</p></div>', unsafe_allow_html=True)
         
         # Create two columns for map and recommendations
         col1, col2 = st.columns([2, 1])
@@ -558,20 +560,20 @@ def main():
         )
         st.plotly_chart(fig_revenue, use_container_width=True)
         
-        # Score vs Distance scatter
-        fig_scatter = px.scatter(
-            recommendations,
-            x='distance_to_center',
-            y='recommendation_score',
-            size='predicted_revenue',
-            title="Score vs Distance from Center",
+        # Daily revenue estimation chart
+        recommendations['estimated_daily_revenue'] = recommendations['predicted_revenue'] / 30
+        fig_daily = px.bar(
+            recommendations.head(10),
+            x=range(1, len(recommendations.head(10))+1),
+            y='estimated_daily_revenue',
+            title="Top 10 Locations - Estimated Daily Revenue",
             labels={
-                'distance_to_center': 'Distance from Center (km)',
-                'recommendation_score': 'Recommendation Score',
-                'predicted_revenue': 'Predicted Revenue (IDR)'
+                'x': 'Location Rank',
+                'estimated_daily_revenue': 'Est. Daily Revenue (IDR)'
             }
         )
-        st.plotly_chart(fig_scatter, use_container_width=True)
+        fig_daily.update_xaxis(title="Location Rank (#1 = Best)")
+        st.plotly_chart(fig_daily, use_container_width=True)
         
         # Data table
         st.subheader("📋 Complete Results")
