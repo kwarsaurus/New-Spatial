@@ -1,0 +1,168 @@
+RESTAURANT LOCATION ML MODEL REPORT (NO DATA LEAKAGE)
+============================================================
+
+Training Date: 2025-08-22 23:21:25.474106
+Total Categories: 18
+Total Features: 29
+Data Leakage Protection: ENABLED
+
+MODEL PERFORMANCE:
+------------------------------
+
+Others:
+  Samples: 49429
+  Test R²: 0.568
+  Test MAE: Rp 39,673
+  CV R²: 0.567 ± 0.013
+  Overfitting Score: 0.015
+
+Steaks and BBQ:
+  Samples: 32583
+  Test R²: 0.762
+  Test MAE: Rp 66,260
+  CV R²: 0.760 ± 0.008
+  Overfitting Score: 0.007
+
+Comfort Food:
+  Samples: 30387
+  Test R²: 0.743
+  Test MAE: Rp 55,847
+  CV R²: 0.740 ± 0.006
+  Overfitting Score: 0.012
+
+Tea and Beverages:
+  Samples: 131849
+  Test R²: 0.669
+  Test MAE: Rp 52,093
+  CV R²: 0.661 ± 0.005
+  Overfitting Score: 0.001
+
+Thai Food:
+  Samples: 32413
+  Test R²: 0.832
+  Test MAE: Rp 40,492
+  CV R²: 0.827 ± 0.007
+  Overfitting Score: 0.002
+
+Indonesian Traditional Food:
+  Samples: 7407
+  Test R²: 0.665
+  Test MAE: Rp 55,592
+  CV R²: 0.667 ± 0.016
+  Overfitting Score: 0.028
+
+Bakery and Pastries:
+  Samples: 23859
+  Test R²: 0.649
+  Test MAE: Rp 34,810
+  CV R²: 0.663 ± 0.010
+  Overfitting Score: 0.028
+
+Seafood:
+  Samples: 13740
+  Test R²: 0.740
+  Test MAE: Rp 68,541
+  CV R²: 0.722 ± 0.010
+  Overfitting Score: 0.000
+
+Japanese Food:
+  Samples: 46277
+  Test R²: 0.608
+  Test MAE: Rp 69,705
+  CV R²: 0.618 ± 0.011
+  Overfitting Score: 0.025
+
+Alcoholic Beverages:
+  Samples: 18596
+  Test R²: 0.778
+  Test MAE: Rp 44,048
+  CV R²: 0.789 ± 0.005
+  Overfitting Score: 0.028
+
+Set Meals and Combos:
+  Samples: 10983
+  Test R²: 0.812
+  Test MAE: Rp 45,751
+  CV R²: 0.831 ± 0.015
+  Overfitting Score: 0.042
+
+Coffee:
+  Samples: 37000
+  Test R²: 0.867
+  Test MAE: Rp 24,190
+  CV R²: 0.871 ± 0.006
+  Overfitting Score: 0.013
+
+Chinese Food:
+  Samples: 9510
+  Test R²: 0.692
+  Test MAE: Rp 78,229
+  CV R²: 0.694 ± 0.010
+  Overfitting Score: 0.015
+
+Fried Food:
+  Samples: 7849
+  Test R²: 0.880
+  Test MAE: Rp 19,611
+  CV R²: 0.871 ± 0.006
+  Overfitting Score: 0.009
+
+Cakes and Desserts:
+  Samples: 8783
+  Test R²: 0.641
+  Test MAE: Rp 68,939
+  CV R²: 0.629 ± 0.010
+  Overfitting Score: 0.014
+
+Non-Food Items/ Event:
+  Samples: 14520
+  Test R²: 0.446
+  Test MAE: Rp 38,344
+  CV R²: 0.477 ± 0.025
+  Overfitting Score: 0.070
+
+Breakfast and Egg Dishes:
+  Samples: 9065
+  Test R²: 0.707
+  Test MAE: Rp 50,325
+  CV R²: 0.642 ± 0.026
+  Overfitting Score: -0.027
+
+Snacks and Appetizers:
+  Samples: 7166
+  Test R²: 0.810
+  Test MAE: Rp 32,004
+  CV R²: 0.785 ± 0.021
+  Overfitting Score: 0.002
+
+CLEAN FEATURES USED (NO DATA LEAKAGE):
+----------------------------------------
+ 1. latitude
+ 2. longitude
+ 3. distance_to_center
+ 4. distance_to_sudirman
+ 5. distance_to_blok_m
+ 6. distance_to_kemang
+ 7. distance_to_pondok_indah
+ 8. distance_to_senayan
+ 9. accessibility_score
+10. gtv_2024
+11. aov_2024
+12. external_aov
+13. Qty
+14. log_qty
+15. has_historical_gtv
+16. transaction_count
+17. location_diversity_lat
+18. location_diversity_lng
+19. avg_external_gtv
+20. avg_external_aov
+21. avg_qty_volume
+22. category_diversity
+23. total_lat_diversity
+24. total_lng_diversity
+25. market_density
+26. market_competition
+27. district_maturity
+28. gtv_data_availability
+29. external_performance_indicator
