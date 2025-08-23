@@ -540,26 +540,29 @@ def main():
                         grid_density=grid_density
                     )
                     
-                    # Display debug info
-                    with st.expander("🔍 Debug Information", expanded=False):
+                    # Display debug info directly
+                    st.subheader("🔍 Analysis Debug Information")
+                    
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        st.markdown("**Grid Generation:**")
                         if hasattr(predictor, 'debug_info'):
                             debug = predictor.debug_info
-                            st.write(f"**Grid Generation for {debug['district']}:**")
-                            st.write(f"- Latitude range: {debug['lat_range']}")
-                            st.write(f"- Longitude range: {debug['lng_range']}")
-                            st.write(f"- Grid size: {debug['grid_size']}")
-                            st.write(f"- Total combinations: {debug['total_combinations']}")
-                            st.write(f"- Points after filter: {debug['points_after_filter']}")
-                            st.write(f"- Points filtered out: {debug['points_filtered_out']}")
-                        
+                            st.write(f"District: {debug['district']}")
+                            st.write(f"Grid size: {debug['grid_size']}")
+                            st.write(f"Total combinations: {debug['total_combinations']}")
+                            st.write(f"Points after filter: {debug['points_after_filter']}")
+                            st.write(f"Points filtered out: {debug['points_filtered_out']}")
+                    
+                    with col2:
+                        st.markdown("**Model Predictions:**")
                         if hasattr(predictor, 'model_debug_info'):
                             model_debug = predictor.model_debug_info
-                            st.write(f"**Model Predictions:**")
-                            st.write(f"- Min: Rp {model_debug['min']:,.0f}")
-                            st.write(f"- Max: Rp {model_debug['max']:,.0f}")
-                            st.write(f"- Mean: Rp {model_debug['mean']:,.0f}")
-                            st.write(f"- Std: Rp {model_debug['std']:,.0f}")
-                            st.write(f"- Unique values: {model_debug['unique_count']}")
+                            st.write(f"Min: Rp {model_debug['min']:,.0f}")
+                            st.write(f"Max: Rp {model_debug['max']:,.0f}")
+                            st.write(f"Mean: Rp {model_debug['mean']:,.0f}")
+                            st.write(f"Unique values: {model_debug['unique_count']}")
                     
                     # Store in session state
                     st.session_state.recommendations = recommendations
