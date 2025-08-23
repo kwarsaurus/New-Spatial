@@ -208,13 +208,17 @@ class RestaurantLocationPredictor:
         lats = np.arange(bounds['lat_min'], bounds['lat_max'], grid_size)
         lngs = np.arange(bounds['lng_min'], bounds['lng_max'], grid_size)
         
-        # DEBUG: Print grid generation info
-        st.write(f"🔍 DEBUG - Grid Generation for {district_name}:")
-        st.write(f"   Latitude range: {bounds['lat_min']} to {bounds['lat_max']}")
-        st.write(f"   Longitude range: {bounds['lng_min']} to {bounds['lng_max']}")
-        st.write(f"   Grid size: {grid_size}")
-        st.write(f"   Lat points: {len(lats)}, Lng points: {len(lngs)}")
-        st.write(f"   Total possible combinations: {len(lats) * len(lngs)}")
+        # CONSOLE DEBUG: Print grid generation info
+        print(f"=== GRID DEBUG for {district_name} ===")
+        print(f"Latitude range: {bounds['lat_min']} to {bounds['lat_max']}")
+        print(f"Longitude range: {bounds['lng_min']} to {bounds['lng_max']}")
+        print(f"Grid size: {grid_size}")
+        print(f"Lat points: {len(lats)}, Lng points: {len(lngs)}")
+        print(f"Total possible combinations: {len(lats) * len(lngs)}")
+        
+        # DEBUG: Print district center
+        center = district['center']
+        print(f"District center: {center}")
         
         grid_points = []
         filtered_count = 0
@@ -233,12 +237,17 @@ class RestaurantLocationPredictor:
                 else:
                     filtered_count += 1
         
-        # DEBUG: Print filtering results
-        st.write(f"   Points after 3km filter: {len(grid_points)}")
-        st.write(f"   Points filtered out: {filtered_count}")
+        # CONSOLE DEBUG: Print filtering results
+        print(f"Points after 3km filter: {len(grid_points)}")
+        print(f"Points filtered out: {filtered_count}")
+        
+        if len(grid_points) > 0:
+            grid_df = pd.DataFrame(grid_points)
+            print(f"Sample grid points:")
+            print(grid_df[['latitude', 'longitude', 'distance_to_center']].head(3))
         
         if len(grid_points) == 0:
-            st.error(f"❌ No grid points generated for {district_name}! Check district bounds.")
+            print("ERROR: No grid points generated!")
             return pd.DataFrame()
         
         return pd.DataFrame(grid_points)
@@ -314,7 +323,7 @@ class RestaurantLocationPredictor:
         return grid_df
     
     def predict_locations(self, category, district_name, top_n=10, grid_density='medium'):
-        """Main prediction function with debugging"""
+        """Main prediction function with console debugging"""
         if category not in self.models:
             raise ValueError(f"No model available for category: {category}")
         
@@ -332,26 +341,37 @@ class RestaurantLocationPredictor:
         
         # Prepare features for prediction
         missing_features = [col for col in self.feature_names if col not in grid_df.columns]
+        if missing_features:
+            print(f"Missing features (filling with 0): {missing_features}")
+        
         for feature in missing_features:
             grid_df[feature] = 0
         
         # Ensure all required features are present
         X = grid_df[self.feature_names].fillna(0)
         
+        # CONSOLE DEBUG: Check input features
+        print(f"=== MODEL INPUT DEBUG ===")
+        print(f"Feature count: {len(self.feature_names)}")
+        print(f"Input shape: {X.shape}")
+        print(f"Sample features for first location:")
+        print(X.iloc[0].head(10))
+        
         # Scale features and predict
         X_scaled = self.scalers[category].transform(X)
         predictions = self.models[category].predict(X_scaled)
         
-        # DEBUG: Check prediction variance
-        st.write(f"🔍 DEBUG - Model Predictions:")
-        st.write(f"   Predictions min: Rp {predictions.min():,.0f}")
-        st.write(f"   Predictions max: Rp {predictions.max():,.0f}")
-        st.write(f"   Predictions mean: Rp {predictions.mean():,.0f}")
-        st.write(f"   Predictions std: Rp {predictions.std():,.0f}")
-        st.write(f"   Unique prediction values: {len(np.unique(predictions))}")
+        # CONSOLE DEBUG: Check prediction variance
+        print(f"=== MODEL OUTPUT DEBUG ===")
+        print(f"Predictions min: Rp {predictions.min():,.0f}")
+        print(f"Predictions max: Rp {predictions.max():,.0f}")
+        print(f"Predictions mean: Rp {predictions.mean():,.0f}")
+        print(f"Predictions std: Rp {predictions.std():,.0f}")
+        print(f"Unique prediction values: {len(np.unique(predictions))}")
+        print(f"First 5 predictions: {predictions[:5]}")
         
         if len(np.unique(predictions)) == 1:
-            st.warning("⚠️ All predictions are identical! Model may have issues.")
+            print("WARNING: All predictions are identical! Model may have issues.")
         
         # Calculate recommendation scores
         grid_df['predicted_revenue'] = predictions
@@ -369,15 +389,21 @@ class RestaurantLocationPredictor:
             grid_df['distance_bonus'] * 0.2
         ) * 100
         
-        # DEBUG: Check score distribution
-        st.write(f"🔍 DEBUG - Recommendation Scores:")
-        st.write(f"   Score min: {grid_df['recommendation_score'].min():.1f}")
-        st.write(f"   Score max: {grid_df['recommendation_score'].max():.1f}")
-        st.write(f"   Score mean: {grid_df['recommendation_score'].mean():.1f}")
-        st.write(f"   Score std: {grid_df['recommendation_score'].std():.1f}")
+        # CONSOLE DEBUG: Check score distribution
+        print(f"=== SCORING DEBUG ===")
+        print(f"Score min: {grid_df['recommendation_score'].min():.1f}")
+        print(f"Score max: {grid_df['recommendation_score'].max():.1f}")
+        print(f"Score mean: {grid_df['recommendation_score'].mean():.1f}")
+        print(f"Score std: {grid_df['recommendation_score'].std():.1f}")
         
         # Get top recommendations
         recommendations = grid_df.nlargest(top_n, 'recommendation_score')
+        
+        # CONSOLE DEBUG: Final results
+        print(f"=== FINAL RESULTS ===")
+        print(f"Top 3 locations:")
+        for i, (_, row) in enumerate(recommendations.head(3).iterrows()):
+            print(f"#{i+1}: Lat {row['latitude']:.4f}, Lng {row['longitude']:.4f}, Score {row['recommendation_score']:.1f}")
         
         # Add reasoning
         recommendations['reasoning'] = recommendations.apply(self._generate_reasoning, axis=1)
