@@ -208,18 +208,6 @@ class RestaurantLocationPredictor:
         lats = np.arange(bounds['lat_min'], bounds['lat_max'], grid_size)
         lngs = np.arange(bounds['lng_min'], bounds['lng_max'], grid_size)
         
-        # CONSOLE DEBUG: Print grid generation info
-        print(f"=== GRID DEBUG for {district_name} ===")
-        print(f"Latitude range: {bounds['lat_min']} to {bounds['lat_max']}")
-        print(f"Longitude range: {bounds['lng_min']} to {bounds['lng_max']}")
-        print(f"Grid size: {grid_size}")
-        print(f"Lat points: {len(lats)}, Lng points: {len(lngs)}")
-        print(f"Total possible combinations: {len(lats) * len(lngs)}")
-        
-        # DEBUG: Print district center
-        center = district['center']
-        print(f"District center: {center}")
-        
         grid_points = []
         filtered_count = 0
         
@@ -237,17 +225,18 @@ class RestaurantLocationPredictor:
                 else:
                     filtered_count += 1
         
-        # CONSOLE DEBUG: Print filtering results
-        print(f"Points after 3km filter: {len(grid_points)}")
-        print(f"Points filtered out: {filtered_count}")
-        
-        if len(grid_points) > 0:
-            grid_df = pd.DataFrame(grid_points)
-            print(f"Sample grid points:")
-            print(grid_df[['latitude', 'longitude', 'distance_to_center']].head(3))
+        # Store debug info for UI display
+        self.debug_info = {
+            'district': district_name,
+            'lat_range': f"{bounds['lat_min']} to {bounds['lat_max']}",
+            'lng_range': f"{bounds['lng_min']} to {bounds['lng_max']}",
+            'grid_size': grid_size,
+            'total_combinations': len(lats) * len(lngs),
+            'points_after_filter': len(grid_points),
+            'points_filtered_out': filtered_count
+        }
         
         if len(grid_points) == 0:
-            print("ERROR: No grid points generated!")
             return pd.DataFrame()
         
         return pd.DataFrame(grid_points)
@@ -361,17 +350,14 @@ class RestaurantLocationPredictor:
         X_scaled = self.scalers[category].transform(X)
         predictions = self.models[category].predict(X_scaled)
         
-        # CONSOLE DEBUG: Check prediction variance
-        print(f"=== MODEL OUTPUT DEBUG ===")
-        print(f"Predictions min: Rp {predictions.min():,.0f}")
-        print(f"Predictions max: Rp {predictions.max():,.0f}")
-        print(f"Predictions mean: Rp {predictions.mean():,.0f}")
-        print(f"Predictions std: Rp {predictions.std():,.0f}")
-        print(f"Unique prediction values: {len(np.unique(predictions))}")
-        print(f"First 5 predictions: {predictions[:5]}")
-        
-        if len(np.unique(predictions)) == 1:
-            print("WARNING: All predictions are identical! Model may have issues.")
+        # Store debug info for UI display
+        self.model_debug_info = {
+            'min': predictions.min(),
+            'max': predictions.max(), 
+            'mean': predictions.mean(),
+            'std': predictions.std(),
+            'unique_count': len(np.unique(predictions))
+        }
         
         # Calculate recommendation scores
         grid_df['predicted_revenue'] = predictions
@@ -553,6 +539,27 @@ def main():
                         top_n=top_n,
                         grid_density=grid_density
                     )
+                    
+                    # Display debug info
+                    with st.expander("🔍 Debug Information", expanded=False):
+                        if hasattr(predictor, 'debug_info'):
+                            debug = predictor.debug_info
+                            st.write(f"**Grid Generation for {debug['district']}:**")
+                            st.write(f"- Latitude range: {debug['lat_range']}")
+                            st.write(f"- Longitude range: {debug['lng_range']}")
+                            st.write(f"- Grid size: {debug['grid_size']}")
+                            st.write(f"- Total combinations: {debug['total_combinations']}")
+                            st.write(f"- Points after filter: {debug['points_after_filter']}")
+                            st.write(f"- Points filtered out: {debug['points_filtered_out']}")
+                        
+                        if hasattr(predictor, 'model_debug_info'):
+                            model_debug = predictor.model_debug_info
+                            st.write(f"**Model Predictions:**")
+                            st.write(f"- Min: Rp {model_debug['min']:,.0f}")
+                            st.write(f"- Max: Rp {model_debug['max']:,.0f}")
+                            st.write(f"- Mean: Rp {model_debug['mean']:,.0f}")
+                            st.write(f"- Std: Rp {model_debug['std']:,.0f}")
+                            st.write(f"- Unique values: {model_debug['unique_count']}")
                     
                     # Store in session state
                     st.session_state.recommendations = recommendations
